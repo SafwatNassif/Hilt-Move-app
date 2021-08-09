@@ -9,4 +9,7 @@ interface MovieAPI {
     @GET("discover/movie")
     suspend fun getMovieList(@Query("sort_by") sortedBy: String = "popularity.desc"): MovieResponse
 
+    @GET("discover/moviesListTest")
+    suspend fun getMovieListError(@Query("sort_by") sortedBy: String = "popularity.desc"): MovieResponse
+
 }

@@ -4,4 +4,5 @@ import com.example.movieapp.data.model.MovieItem
 
 interface MovieListUseCase {
     suspend fun getMovie(): List<MovieItem>
+    suspend fun getMoviesWithVoteAverageDesc(): List<MovieItem>
 }

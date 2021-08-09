@@ -1,8 +1,10 @@
 package com.example.movieapp.ui
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.movieapp.data.model.MovieItem
 import com.example.movieapp.domain.useCase.MovieListUseCase
 import com.example.movieapp.ui.movieList.MovieListViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,7 +33,7 @@ class MovieViewModel @Inject constructor(
                 }
             }
             is IOException -> {
-                println("please check internet connection : ${throwable.message}")
+                Log.e("MovieViewModel", "please check internet connection : ${throwable.message}")
             }
         }
     }
@@ -39,12 +41,35 @@ class MovieViewModel @Inject constructor(
     fun getMovieList() {
         viewState.value = MovieListViewState.Loading(true)
 
-        viewModelScope.launch(Dispatchers.IO + handleException) {
-            val movies = movieListUseCase.getMovie()
-            delay(3000)
-            withContext(Dispatchers.Main) {
-                viewState.value = MovieListViewState.Success(movies)
-                viewState.value = MovieListViewState.Loading(false)
+        viewModelScope.launch(Dispatchers.IO) {
+            supervisorScope {
+                var movieDes: List<MovieItem>? = null
+                var movieR: List<MovieItem>? = null
+
+                val moviesWithVoteAverageDesc = async {
+                    movieListUseCase.getMoviesWithVoteAverageDesc()
+                }
+                val movies = async {
+                    movieListUseCase.getMovie()
+                }
+
+                try {
+                    movieDes = moviesWithVoteAverageDesc.await()
+                } catch (e: Exception) {
+                    handleException.handleException(this.coroutineContext, e)
+                }
+
+                try {
+                    movieR = movies.await()
+
+                } catch (e: Exception) {
+                    handleException.handleException(this.coroutineContext, e)
+                }
+
+                withContext(Dispatchers.Main) {
+                    viewState.value = movieR?.let { MovieListViewState.Success(it) }
+                    viewState.value = MovieListViewState.Loading(false)
+                }
             }
         }
     }

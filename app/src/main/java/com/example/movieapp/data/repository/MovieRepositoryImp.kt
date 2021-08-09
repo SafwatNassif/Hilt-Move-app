@@ -13,5 +13,8 @@ class MovieRepositoryImp @Inject constructor(val remoteDataSource: MovieAPI) : M
         return remoteDataSource.getMovieList()
     }
 
+    override suspend fun getMoviesWithVoteAverageDesc(): MovieResponse {
+        return remoteDataSource.getMovieListError(sortedBy = "vote_average.desc")
+    }
 
 }

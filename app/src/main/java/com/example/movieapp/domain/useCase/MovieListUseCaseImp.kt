@@ -10,7 +10,11 @@ class MovieListUseCaseImp @Inject constructor(val movieRepository: MovieReposito
     override suspend fun getMovie(): List<MovieItem> {
         val result = movieRepository.getMovies()
         return result.movies
+    }
 
+    override suspend fun getMoviesWithVoteAverageDesc(): List<MovieItem> {
+        val result = movieRepository.getMoviesWithVoteAverageDesc()
+        return result.movies
     }
 
 }
