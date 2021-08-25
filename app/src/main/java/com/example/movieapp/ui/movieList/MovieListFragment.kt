@@ -1,11 +1,17 @@
 package com.example.movieapp.ui.movieList
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import com.example.movieapp.R
+import com.example.movieapp.data.model.MovieItem
 import com.example.movieapp.databinding.FragmentMovieListBinding
 import com.example.movieapp.ui.MovieViewModel
 import com.example.movieapp.ui.movieList.adapter.MovieListAdapter
@@ -35,7 +41,7 @@ class MovieListFragment : Fragment() {
         })
 
         // to avoid reload data again.
-        if (!(viewModel.viewState.value is MovieListViewState.Success))
+        if (viewModel.viewState.value !is MovieListViewState.Success)
             viewModel.getMovieList()
     }
 
@@ -49,9 +55,14 @@ class MovieListFragment : Fragment() {
                 }
             }
             is MovieListViewState.Success -> {
-                viewBinding.rvMovieList.adapter = MovieListAdapter(viewState.movies)
+                viewBinding.rvMovieList.adapter =
+                    MovieListAdapter(viewState.movies, this::onItemClick)
             }
         }
+    }
+
+    private fun onItemClick(item: MovieItem) {
+        findNavController().navigate(R.id.action_movieListFragment_to_detailsFragment)
     }
 
 }

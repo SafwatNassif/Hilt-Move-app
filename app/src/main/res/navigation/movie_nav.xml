@@ -9,7 +9,11 @@
         android:id="@+id/movieListFragment"
         android:name="com.example.movieapp.ui.movieList.MovieListFragment"
         android:label="fragment_movie_list"
-        tools:layout="@layout/fragment_movie_list" />
+        tools:layout="@layout/fragment_movie_list" >
+        <action
+            android:id="@+id/action_movieListFragment_to_detailsFragment"
+            app:destination="@id/detailsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/detailsFragment"
         android:name="com.example.movieapp.ui.details.DetailsFragment"

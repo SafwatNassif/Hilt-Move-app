@@ -8,8 +8,9 @@ import com.bumptech.glide.Glide
 import com.example.movieapp.R
 import com.example.movieapp.data.model.MovieItem
 import com.example.movieapp.databinding.ItemMovieLayoutBinding
+import kotlin.reflect.KFunction1
 
-class MovieListAdapter constructor(val movies: List<MovieItem>) :
+class MovieListAdapter(private val movies: List<MovieItem>, val onItemClick: KFunction1<MovieItem, Unit>) :
     RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>() {
 
 
@@ -23,8 +24,10 @@ class MovieListAdapter constructor(val movies: List<MovieItem>) :
     }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-        holder.view.movieContainer.animation = AnimationUtils.loadAnimation(holder.view.root.context,
-        R.anim.rv_animation)
+        holder.view.movieContainer.animation = AnimationUtils.loadAnimation(
+            holder.view.root.context,
+            R.anim.rv_animation
+        )
 
         holder.bind(item = movies[position])
     }
@@ -41,6 +44,9 @@ class MovieListAdapter constructor(val movies: List<MovieItem>) :
                 .into(view.ivMovieImage)
 
 
+            view.cvContainer.setOnClickListener {
+                onItemClick.invoke(item)
+            }
         }
     }
 }

@@ -67,8 +67,8 @@ class MovieViewModel @Inject constructor(
                 }
 
                 withContext(Dispatchers.Main) {
-                    viewState.value = movieR?.let { MovieListViewState.Success(it) }
                     viewState.value = MovieListViewState.Loading(false)
+                    viewState.value = movieR?.let { MovieListViewState.Success(it) }
                 }
             }
         }
