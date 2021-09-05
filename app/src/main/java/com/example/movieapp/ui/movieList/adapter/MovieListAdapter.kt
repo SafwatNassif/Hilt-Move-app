@@ -3,17 +3,29 @@ package com.example.movieapp.ui.movieList.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.movieapp.R
 import com.example.movieapp.data.model.MovieItem
 import com.example.movieapp.databinding.ItemMovieLayoutBinding
 
-class MovieListAdapter constructor(val movies: List<MovieItem>) :
-    RecyclerView.Adapter<MovieListAdapter.MovieViewHolder>() {
+class MovieListAdapter:
+    PagingDataAdapter<MovieItem, MovieListAdapter.MovieViewHolder>(REPO_COMPARATOR) {
 
 
-    override fun getItemCount() = movies.size
+    companion object {
+        private val REPO_COMPARATOR = object : DiffUtil.ItemCallback<MovieItem>() {
+            override fun areItemsTheSame(oldItem: MovieItem, newItem: MovieItem): Boolean =
+                oldItem.id == newItem.id
+
+            override fun areContentsTheSame(oldItem: MovieItem, newItem: MovieItem): Boolean =
+                oldItem == newItem
+        }
+    }
+
+
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
@@ -23,10 +35,12 @@ class MovieListAdapter constructor(val movies: List<MovieItem>) :
     }
 
     override fun onBindViewHolder(holder: MovieViewHolder, position: Int) {
-        holder.view.movieContainer.animation = AnimationUtils.loadAnimation(holder.view.root.context,
-        R.anim.rv_animation)
+        holder.view.movieContainer.animation = AnimationUtils.loadAnimation(
+            holder.view.root.context,
+            R.anim.rv_animation
+        )
 
-        holder.bind(item = movies[position])
+        holder.bind(item = getItem(position)!!)
     }
 
 

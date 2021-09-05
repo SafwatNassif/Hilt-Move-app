@@ -6,16 +6,21 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import com.example.movieapp.databinding.FragmentMovieListBinding
 import com.example.movieapp.ui.MovieViewModel
 import com.example.movieapp.ui.movieList.adapter.MovieListAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
 class MovieListFragment : Fragment() {
 
     val viewModel: MovieViewModel by activityViewModels()
+    val adapter : MovieListAdapter by lazy {
+        MovieListAdapter()
+    }
 
     lateinit var viewBinding: FragmentMovieListBinding
 
@@ -30,6 +35,7 @@ class MovieListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initView()
         viewModel.viewState.observe(viewLifecycleOwner, {
             renderView(it)
         })
@@ -37,6 +43,10 @@ class MovieListFragment : Fragment() {
         // to avoid reload data again.
         if (!(viewModel.viewState.value is MovieListViewState.Success))
             viewModel.getMovieList()
+    }
+
+    private fun initView() {
+        viewBinding.rvMovieList.adapter = adapter
     }
 
     private fun renderView(viewState: MovieListViewState?) {
@@ -49,7 +59,9 @@ class MovieListFragment : Fragment() {
                 }
             }
             is MovieListViewState.Success -> {
-                viewBinding.rvMovieList.adapter = MovieListAdapter(viewState.movies)
+                lifecycleScope.launch {
+                    adapter.submitData(viewState.movies)
+                }
             }
         }
     }
